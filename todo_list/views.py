@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.shortcuts import HttpResponse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.views import LoginView as BaseLoginView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from .models import TodoList
 from django.views import View
 from django.urls import reverse_lazy
@@ -21,6 +22,22 @@ class LoginView(BaseLoginView):
 
     def get_success_url(self):
         return reverse_lazy('tasks')
+
+
+class UserCreationView(FormView):
+    template_name = 'todo_list/regester.html'
+    redirect_authenticated_user = True
+    success_url = reverse_lazy('create-task')
+    form_class = UserCreationForm
+
+    def form_valid(self, form):
+        user = form.save()
+        if user:
+            login(self.request, user)
+        else:
+            redirect('regester')
+        return super(UserCreationView, self).form_valid(form)
+
 
 
 class TasksViewList(LoginRequiredMixin, ListView):
@@ -47,7 +64,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
 
 class CreateTaskView(LoginRequiredMixin, CreateView):
     model = TodoList
-    fields = ['user', 'title', 'description', 'completed']
+    fields = [ 'title', 'description', 'completed']
     success_url = reverse_lazy('tasks')
 
     def form_valid(self, form):
@@ -56,7 +73,7 @@ class CreateTaskView(LoginRequiredMixin, CreateView):
 
 class UpdateTaskView(LoginRequiredMixin, UpdateView):
     model = TodoList
-    fields = ['user', 'title', 'description', 'completed']
+    fields = [ 'title', 'description', 'completed']
     success_url = reverse_lazy('tasks')
 class DeleteTaskView(LoginRequiredMixin, DeleteView):
     model = TodoList
