@@ -1,0 +1,13 @@
+<h1>tasks</h1>
+<table>
+  <tr>
+    <th>tasks</th>
+  </tr>
+  {% for task in tasks %}
+  <tr>
+    <td><a href="{% url 'task' task.id %}">{{ task }}</a></td>
+  </tr>
+  {% empty %}
+  <h4>no tasks</h4>
+  {% endfor %}
+</table>
