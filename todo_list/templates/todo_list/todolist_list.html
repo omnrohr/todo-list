@@ -1,24 +1,36 @@
 {% if request.user.is_authenticated %}
-<h3>hello {{ request.user }}</h3>
-<h4>not {{ request.user }} <a href="{% url 'logout' %}">log out</a></h4>
-
-<h1>tasks</h1>
+<h2>hello {{ request.user }}</h2>
+<h4>Not {{ request.user|title }} <a href="{% url 'logout' %}">Log Out</a></h4>
+<h1>My Todo List</h1>
 <h3><a href="{% url 'create-task' %}">Add task</a></h3>
 <table>
   <tr>
-    <th>tasks</th>
+    <h3>In Progress: {{in_porgress_count}}</h3>
+  {% for task in in_porgress %}
+    <tr>
+      <td><a href="{% url 'task' task.id %}">{{ task|title }}</a></td>
+      <td><a href="{% url 'update-task' task.id %}"> Edit </a></td>
+      <td><a href="{% url 'delete-task' task.id %}"> Delete </a></td>
+    </tr>
+    {% empty %}
+    <h4>no tasks</h4>
   </tr>
-  {% for task in tasks %}
-  <tr>
-    <td><a href="{% url 'task' task.id %}">{{ task|title }}</a></td>
-    <td><a href="{% url 'update-task' task.id %}"> Edit </a></td>
-    <td><a href="{% url 'delete-task' task.id %}"> Delete </a></td>
-  </tr>
-  {% empty %}
-  <h4>no tasks</h4>
   {% endfor %}
+</table>
+<table>
+  <tr>
+    <h3>Completed Tasks: {{completed_count}}</h3>
+        {% for task in completed %}
+          <tr>
+            <td><a href="{% url 'task' task.id %}">{{ task|title }}</a></td>
+            <td><a href="{% url 'delete-task' task.id %}"> Delete </a></td>
+          </tr>
+          {% empty %}
+          <h4>no tasks</h4>
+        {% endfor %}
+  </tr>
 </table>
 
 {% else %}
-<h2><a href="{% url 'login' %}">Log In</a> Log In</h2>
+<h2><a href="{% url 'login' %}">Log In</a></h2>
 {% endif %}
