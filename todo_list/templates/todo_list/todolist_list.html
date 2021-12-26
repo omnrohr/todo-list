@@ -1,13 +1,24 @@
+{% if request.user.is_authenticated %}
+<h3>hello {{ request.user }}</h3>
+<h4>not {{ request.user }} log out</h4>
+
 <h1>tasks</h1>
+<h3><a href="{% url 'create-task' %}">Add task</a></h3>
 <table>
   <tr>
     <th>tasks</th>
   </tr>
   {% for task in tasks %}
   <tr>
-    <td><a href="{% url 'task' task.id %}">{{ task }}</a></td>
+    <td><a href="{% url 'task' task.id %}">{{ task|title }}</a></td>
+    <td><a href="{% url 'update-task' task.id %}"> Edit </a></td>
+    <td><a href="{% url 'delete-task' task.id %}"> Delete </a></td>
   </tr>
   {% empty %}
   <h4>no tasks</h4>
   {% endfor %}
 </table>
+
+{% else %}
+<h2>Log In</h2>
+{% endif %}
