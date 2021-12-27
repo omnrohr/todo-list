@@ -3,6 +3,11 @@
 <h4>Not {{ request.user|title }} <a href="{% url 'logout' %}">Log Out</a></h4>
 <h1>My Todo List</h1>
 <h3><a href="{% url 'create-task' %}">Add task</a></h3>
+<form method="GET">
+  <input type="text" name="search-aria" placeholder="Search" value="{{search_input}}">
+  <input type="submit" value="Search">
+</form>
+
 <table>
   <tr>
     <h3>In Progress: {{in_porgress_count}}</h3>

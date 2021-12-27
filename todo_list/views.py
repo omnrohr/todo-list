@@ -55,6 +55,13 @@ class TasksViewList(LoginRequiredMixin, ListView):
         context['completed_count'] = context['completed'].count()
         context['in_porgress'] = TodoList.objects.filter(user=self.request.user, completed=False)
         context['in_porgress_count'] = context['in_porgress'].count()
+        search_field = self.request.GET.get('search-aria') or ''
+        if search_field:
+            context['completed'] = TodoList.objects.filter(user=self.request.user, completed=True).filter(title__icontains=search_field)
+            context['completed_count'] = context['completed'].count()
+            context['in_porgress'] = TodoList.objects.filter(user=self.request.user, completed=False).filter(title__icontains=search_field)
+            context['in_porgress_count'] = context['in_porgress'].count()
+            context['search_input'] = search_field
         return context
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
