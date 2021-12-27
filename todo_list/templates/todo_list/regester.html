@@ -1,7 +1,0 @@
-<a href="{% url 'tasks' %}">Back</a>
-<form method="post">
-  {% csrf_token %} {{form.as_p}}
-
-  <input type="submit" value="Regester" />
-</form>
-<p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>

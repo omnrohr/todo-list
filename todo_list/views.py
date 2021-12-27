@@ -13,6 +13,8 @@ from django.views import View
 from django.urls import reverse_lazy
 # Create your views here.
 from django.views.generic.edit import ModelFormMixin
+from django.db import transaction
+from .forms import PositionForm
 
 
 class LoginView(BaseLoginView):
@@ -25,7 +27,7 @@ class LoginView(BaseLoginView):
 
 
 class UserCreationView(FormView):
-    template_name = 'todo_list/regester.html'
+    template_name = 'todo_list/register.html'
     redirect_authenticated_user = True
     success_url = reverse_lazy('create-task')
     form_class = UserCreationForm
@@ -35,7 +37,7 @@ class UserCreationView(FormView):
         if user:
             login(self.request, user)
         else:
-            redirect('regester')
+            redirect('register')
         return super(UserCreationView, self).form_valid(form)
 
 
@@ -55,8 +57,9 @@ class TasksViewList(LoginRequiredMixin, ListView):
         context['completed_count'] = context['completed'].count()
         context['in_porgress'] = TodoList.objects.filter(user=self.request.user, completed=False)
         context['in_porgress_count'] = context['in_porgress'].count()
-        search_field = self.request.GET.get('search-aria') or ''
+        search_field = self.request.GET.get('search-area') or ''
         if search_field:
+            context['tasks'] = context['tasks'].filter(user=self.request.user).filter(title__icontains=search_field)
             context['completed'] = TodoList.objects.filter(user=self.request.user, completed=True).filter(title__icontains=search_field)
             context['completed_count'] = context['completed'].count()
             context['in_porgress'] = TodoList.objects.filter(user=self.request.user, completed=False).filter(title__icontains=search_field)
@@ -87,3 +90,14 @@ class DeleteTaskView(LoginRequiredMixin, DeleteView):
     success_url = '/'
 
     
+class TaskReorder(View):
+    def post(self, request):
+        form = PositionForm(request.POST)
+
+        if form.is_valid():
+            positionList = form.cleaned_data["position"].split(',')
+
+            with transaction.atomic():
+                self.request.user.set_todolist_order(positionList)
+
+        return redirect(reverse_lazy('tasks'))

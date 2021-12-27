@@ -1,3 +1,4 @@
+{% extends 'todo_list/main.html' %} {% block content %}
 <table>
   <tr>
     <th>task id: {{task_detail.id}}</th>
@@ -20,3 +21,4 @@
     <td>{{task_detail.created}}</td>
   </tr>
 </table>
+{% endblock content %}

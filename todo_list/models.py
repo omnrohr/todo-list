@@ -13,4 +13,4 @@ class TodoList(models.Model):
         return self.title
 
     class Meta:
-        ordering = ['completed']
+        order_with_respect_to = 'user'
